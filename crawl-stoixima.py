@@ -18,7 +18,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import numpy as np
-from datetime import datetime, timedelta
+
 
 
 
@@ -71,7 +71,7 @@ class execute():
         crawled_data = pd.DataFrame(data, columns=[*self.settings])
         
         # Save data to csv file
-        crawled_data.to_csv('C:\\Users\\User\\OneDrive\\Desktop\\Apiron\\Crawler\\infobeto.csv', index=False, encoding="utf-8-sig")
+        crawled_data.to_csv('C:\\Users\\Βίκη\\Desktop\\Επιφάνεια εργασίας_XP\\GAMES\\infobeto_'+str(self.date)+'_.csv', index=False, encoding="utf-8-sig")
        
         # Close driver
         self.driver.close()
