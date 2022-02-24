@@ -104,8 +104,8 @@ settings = {
 
 }
 
-#exec = execute('https://www.infobeto.com/kouponi-opap',"//div[@class='table-responsive']//tbody/tr[@class='lineHeight']",settings)
-#exec.crawler()
-print(1-timedelta(1))
+exec = execute('https://www.infobeto.com/kouponi-opap',"//div[@class='table-responsive']//tbody/tr[@class='lineHeight']",settings)
+exec.crawler()
+
 
 
