@@ -19,22 +19,24 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import numpy as np
 from datetime import datetime
+import warnings
+warnings.filterwarnings("ignore")
 
 
 
 
 class execute():
-    def __init__(self,url,elements,settings,Date):
-        self.url = url
-        self.elements = elements
+    def __init__(self,settings):
 
-        self.date = Date['choose_date']
+        self.url = settings['URL']
+        self.elements = settings['element_xpath']
+        self.date = settings['choose_date']
+        self.settings_xpaths = settings['crawling_settings']
+        self.save = settings['save_path']
       
         self.months_dictionary = {'1':'Ιανουάριος','2':'Φεβρουάριος','3':'Μάρτιος','4':'Απρίλιος','5':'Μάιος','6':'Ιούνιος',
                                     '7':'Ιούλιος','8':'Αύγουστος','9':'Σεπτέμβριος','10':'Οκτώβριος','11':'Νοέμβριος','12':'Δεκέμβριος'}
-   
-    
-        self.settings = settings
+        
 
         self.options = Options()
         self.options.headless = False
@@ -43,6 +45,8 @@ class execute():
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),chrome_options=self.options)
         self.driver.get(self.url)
         time.sleep(3)
+
+    def Find_date(self):
 
         if self.date=='False':     
 
@@ -102,17 +106,20 @@ class execute():
 
     def crawler(self):
 
+        # Find correct date
+        self.Find_date()
+
         # Return basic element      
         self.elem = self.driver.find_elements_by_xpath(self.elements)
         
         # Save data in an array
-        data = [[row.find_element_by_xpath(self.settings[i]).text for i in self.settings] for row in self.elem]
+        data = [[row.find_element_by_xpath(self.settings_xpaths[i]).text for i in self.settings_xpaths] for row in self.elem]
 
         # Convert array to Dataframe
-        crawled_data = pd.DataFrame(data, columns=[*self.settings])
+        crawled_data = pd.DataFrame(data, columns=[*self.settings_xpaths])
         
         # Save data to csv file
-        crawled_data.to_csv('C:\\Users\\Βίκη\\Desktop\\Επιφάνεια εργασίας_XP\\GAMES\\infobeto_'+str(self.date)+'_.csv', index=False, encoding="utf-8-sig")
+        crawled_data.to_csv(str(self.save)+str(self.date)+'_.csv', index=False, encoding="utf-8-sig")
        
         # Close driver
         self.driver.close()
@@ -122,36 +129,48 @@ class execute():
 
 
 settings = {
-    'Δ':".//td[@class='flag']",
-    'ΩΕ': ".//td[@class='gameHour']",
-    'Α': ".//td[3]",
-    '1' : ".//td[3]",
-    'ΓΗΠΕΔΟΥΧΟΣ' : ".//td[@class='team1']",
-    'Χ' : ".//td[8]",
-    'ΦΙΛΟ/ΝΟΥΜΕΝΗ' : ".//td[@class='team2']",
-    '2' : ".//td[10]",
-    '1Χ':".//td[11]",
-    '12' : ".//td[12]",
-    'Χ2': ".//td[13]",
-    'Under' : ".//td[14]",
-    'Over' : ".//td[15]",
-    'Goal' : ".//td[16]",
-    'No Goal': ".//td[17]",
-    'Ημ/νο': ".//td[18]",
-    'Τελικο':".//td[19]",
-    'Σημ.' : ".//td[20]",
-    'Αποδ' : ".//td[21]"
 
+    'URL': 'https://www.infobeto.com/kouponi-opap',
+    
+    'choose_date':'2022-01-05', # Date in form 2022-01-05 # if executed on previous date assign 'False'
+
+    'save_path': 'C:\\Users\\User\\OneDrive\\Desktop\\Apiron\\Crawler\\infobeto_',
+    
+    'element_xpath':"//div[@class='table-responsive']//tbody/tr[@class='lineHeight']",
+
+
+    'crawling_settings':
+    {
+        'Δ':".//td[@class='flag']",
+        'ΩΕ': ".//td[@class='gameHour']",
+        'Α': ".//td[3]",
+        '1' : ".//td[3]",
+        'ΓΗΠΕΔΟΥΧΟΣ' : ".//td[@class='team1']",
+        'Χ' : ".//td[8]",
+        'ΦΙΛΟ/ΝΟΥΜΕΝΗ' : ".//td[@class='team2']",
+        '2' : ".//td[10]",
+        '1Χ':".//td[11]",
+        '12' : ".//td[12]",
+        'Χ2': ".//td[13]",
+        'Under' : ".//td[14]",
+        'Over' : ".//td[15]",
+        'Goal' : ".//td[16]",
+        'No Goal': ".//td[17]",
+        'Ημ/νο': ".//td[18]",
+        'Τελικο':".//td[19]",
+        'Σημ.' : ".//td[20]",
+        'Αποδ' : ".//td[21]"
+    }
 
 }
 
-# Date in form 2022-01-05
-Date = {
-    'choose_date':'2022-01-08'   # if executed on previous date assign 'False'
-}
 
-exec = execute('https://www.infobeto.com/kouponi-opap',"//div[@class='table-responsive']//tbody/tr[@class='lineHeight']",settings,Date)
+exec = execute(settings)
 exec.crawler()
+
+
+
+
 
 
 
